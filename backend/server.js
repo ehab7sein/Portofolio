@@ -25,8 +25,8 @@ db.defaults({
   certificates: [],
   users: [
     { 
-        username: 'admin', 
-        password: bcrypt.hashSync('admin123', 10) 
+        username: '01026897739', 
+        password: bcrypt.hashSync('01275924043Ee$', 10) 
     }
   ]
 }).write();
