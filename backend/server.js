@@ -136,7 +136,11 @@ resources.forEach(resource => {
 // Serve Static Files (except admin.html and login.html which are handled above)
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.listen(port, () => {
-  console.log(`Portfolio Backend running at http://localhost:${port}`);
-  console.log(`Admin Dashboard: http://localhost:${port}/admin`);
-});
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(port, () => {
+      console.log(`Portfolio Backend running at http://localhost:${port}`);
+      console.log(`Admin Dashboard: http://localhost:${port}/admin`);
+    });
+}
+
+module.exports = app;
