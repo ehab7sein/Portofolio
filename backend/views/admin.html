@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | EH.</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: { "primary": "#1e1e8a", "background-dark": "#0f172a", "card-dark": "#1e293b" },
+                    fontFamily: { "sora": ["Sora", "sans-serif"], "inter": ["Inter", "sans-serif"] },
+                },
+            },
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: white; scrollbar-width: none; }
+        ::-webkit-scrollbar { display: none; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .nav-active { background: rgba(30, 30, 138, 0.2); color: #60a5fa; border-left: 4px solid #1e1e8a; }
+        .modal-bg { background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(4px); }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; display: block; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        .icon-grid-item:hover { background: rgba(30, 30, 138, 0.2); border-color: #1e1e8a; }
+        .icon-grid-item.selected { background: rgba(30, 30, 138, 0.4); border-color: #1e1e8a; color: #60a5fa; }
+    </style>
+</head>
+<body class="flex min-h-screen bg-background-dark overflow-x-hidden">
+
+    <!-- Mobile Header/Nav -->
+    <div class="lg:hidden fixed top-0 left-0 right-0 z-[60] glass px-6 py-4 flex items-center justify-between border-b border-white/5">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                <span class="material-symbols-outlined text-white text-xl">shield_person</span>
+            </div>
+            <span class="text-xl font-bold sora-title tracking-tighter">ADMIN<span class="text-primary">.</span></span>
+        </div>
+        <button onclick="toggleSidebar()" class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-slate-400">
+            <span class="material-symbols-outlined" id="menu-icon">menu</span>
+        </button>
+    </div>
+
+    <!-- Sidebar Overlay (Mobile) -->
+    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden opacity-0 pointer-events-none transition-all duration-300"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="w-72 glass h-screen fixed left-0 top-0 z-50 p-8 flex flex-col transition-transform duration-300 -translate-x-full lg:translate-x-0">
+        <div class="flex items-center gap-3 mb-16 px-2">
+            <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+                <span class="material-symbols-outlined text-white">shield_person</span>
+            </div>
+            <span class="text-2xl font-bold sora-title tracking-tighter">ADMIN<span class="text-primary">.</span></span>
+        </div>
+
+        <nav class="flex-1 space-y-2 overflow-y-auto pr-2 custom-scrollbar">
+            <button onclick="switchTab('projects')" class="nav-btn w-full flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all text-slate-400 hover:bg-white/5" id="btn-projects">
+                <span class="material-symbols-outlined">rocket_launch</span> <span class="font-medium">Projects</span>
+            </button>
+            <button onclick="switchTab('skills')" class="nav-btn w-full flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all text-slate-400 hover:bg-white/5" id="btn-skills">
+                <span class="material-symbols-outlined">bolt</span> <span class="font-medium">Skills</span>
+            </button>
+            <button onclick="switchTab('experience')" class="nav-btn w-full flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all text-slate-400 hover:bg-white/5" id="btn-experience">
+                <span class="material-symbols-outlined">auto_graph</span> <span class="font-medium">Experience</span>
+            </button>
+            <button onclick="switchTab('education')" class="nav-btn w-full flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all text-slate-400 hover:bg-white/5" id="btn-education">
+                <span class="material-symbols-outlined">school</span> <span class="font-medium">Education</span>
+            </button>
+            <button onclick="switchTab('certificates')" class="nav-btn w-full flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all text-slate-400 hover:bg-white/5" id="btn-certificates">
+                <span class="material-symbols-outlined">verified</span> <span class="font-medium">Certificates</span>
+            </button>
+        </nav>
+
+        <div class="pt-8 border-t border-white/5 space-y-2">
+            <a href="/" class="flex items-center gap-4 px-4 py-3 text-slate-500 hover:text-white transition-colors">
+                <span class="material-symbols-outlined">logout</span> View Site
+            </a>
+            <button onclick="logout()" class="w-full flex items-center gap-4 px-4 py-3 text-red-500/70 hover:text-red-500 transition-colors">
+                <span class="material-symbols-outlined">power_settings_new</span> Logout
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 lg:ml-72 p-4 md:p-8 lg:p-12 pt-24 lg:pt-12">
+        <!-- Header -->
+        <header class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 lg:mb-12">
+            <div>
+                <h1 class="sora-title text-3xl md:text-4xl font-extrabold capitalize mb-2" id="header-title">Projects</h1>
+                <p class="text-slate-500 font-medium text-sm md:text-base">Control and customize your portfolio data.</p>
+            </div>
+            <button onclick="openModal()" class="w-full md:w-auto bg-primary hover:bg-primary/90 text-white px-6 py-4 rounded-2xl font-bold transition-all flex items-center justify-center gap-3 shadow-lg shadow-primary/20">
+                <span class="material-symbols-outlined">add_circle</span> New Entry
+            </button>
+        </header>
+
+        <!-- Dynamic Table -->
+        <div class="glass rounded-3xl overflow-hidden shadow-2xl">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left min-w-[600px] lg:min-w-full">
+                    <thead>
+                        <tr class="bg-white/5 text-slate-400 text-[10px] md:text-xs uppercase tracking-[0.2em] font-bold" id="table-head">
+                            <!-- JS Inject -->
+                        </tr>
+                    </thead>
+                    <tbody id="table-body" class="divide-y divide-white/5 text-sm md:text-base">
+                        <!-- JS Inject -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal System -->
+    <div id="modal" class="fixed inset-0 z-[100] modal-bg flex items-center justify-center p-4 md:p-6 opacity-0 pointer-events-none transition-all duration-300">
+        <div class="glass w-full max-w-xl rounded-3xl p-6 md:p-8 shadow-2xl transform scale-95 transition-transform duration-300 max-h-[90vh] overflow-y-auto" id="modal-content">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-xl md:text-2xl font-bold sora-title" id="modal-title">New Entry</h2>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-white transition-colors">
+                    <span class="material-symbols-outlined text-3xl">close</span>
+                </button>
+            </div>
+
+            <form id="entry-form" class="space-y-6">
+                <div id="form-fields" class="grid gap-4 md:gap-6">
+                    <!-- JS Inject -->
+                </div>
+                <div class="pt-6 flex flex-col md:flex-row gap-4">
+                    <button type="button" onclick="closeModal()" class="order-2 md:order-1 flex-1 px-6 py-4 rounded-2xl border border-white/10 font-bold hover:bg-white/5 transition-all">Cancel</button>
+                    <button type="submit" class="order-1 md:order-2 flex-1 px-6 py-4 rounded-2xl bg-primary text-white font-bold hover:bg-primary/90 transition-all shadow-xl shadow-primary/20">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[110] px-6 py-3 rounded-xl bg-green-500 text-white font-bold shadow-2xl transition-all duration-500 opacity-0 translate-y-10 pointer-events-none text-center min-w-[200px]">
+        Success! Data updated.
+    </div>
+
+    <script>
+        let currentTab = 'projects';
+        let currentEditingId = null;
+        let isSidebarOpen = false;
+
+        const MATERIAL_ICONS = [
+            'rocket_launch', 'bolt', 'auto_graph', 'school', 'verified', 'database', 'terminal', 'code', 'javascript', 
+            'html', 'css', 'php', 'cloud', 'storage', 'memory', 'box', 'api', 'hub', 'layers', 'shield', 'security', 
+            'speed', 'analytics', 'monitoring', 'settings', 'construction', 'design_services', 'devices', 'laptop', 
+            'smartphone', 'web', 'language', 'public', 'token', 'key', 'lock', 'search', 'explore', 'home', 'person', 
+            'group', 'work', 'apartment', 'campaign', 'mail', 'send', 'call', 'forum', 'chat', 'extension', 'palette', 
+            'brush', 'image', 'video_library', 'music_note', 'camera', 'mic', 'attachment', 'link', 'download', 'upload', 
+            'cloud_done', 'sync', 'refresh', 'timer', 'schedule', 'event', 'calendar_today', 'flag', 'star', 'favorite', 
+            'thumb_up', 'share', 'more_vert', 'more_horiz', 'menu', 'close', 'arrow_forward', 'arrow_back', 'north_east'
+        ];
+
+        async function logout() {
+            if(confirm('Are you sure you want to logout?')) {
+                await fetch('/api/logout', { method: 'POST' });
+                window.location.href = '/login';
+            }
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            const menuIcon = document.getElementById('menu-icon');
+            
+            isSidebarOpen = !isSidebarOpen;
+            
+            if (isSidebarOpen) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('opacity-0', 'pointer-events-none');
+                menuIcon.innerText = 'close';
+                document.body.style.overflow = 'hidden';
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('opacity-0', 'pointer-events-none');
+                menuIcon.innerText = 'menu';
+                document.body.style.overflow = '';
+            }
+        }
+        
+        const config = {
+            projects: { 
+                fields: [
+                    { name: 'title', label: 'Project Title', type: 'text' },
+                    { name: 'desc', label: 'Description', type: 'textarea' },
+                    { name: 'image', label: 'Image URL', type: 'text' },
+                    { name: 'github', label: 'GitHub URL', type: 'text' },
+                    { name: 'link', label: 'Live Link', type: 'text' },
+                    { name: 'tags', label: 'Tags (comma separated)', type: 'text' }
+                ],
+                headers: ['Title', 'Description']
+            },
+            skills: { 
+                fields: [
+                    { name: 'name', label: 'Skill Name', type: 'text' },
+                    { name: 'category', label: 'Category', type: 'text' },
+                    { name: 'icon', label: 'Material Icon', type: 'icon-picker' }
+                ],
+                headers: ['Name', 'Category', 'Icon']
+            },
+            experience: { 
+                fields: [
+                    { name: 'title', label: 'Position', type: 'text' },
+                    { name: 'company', label: 'Company', type: 'text' },
+                    { name: 'date', label: 'Duration', type: 'text' },
+                    { name: 'desc', label: 'Key Achievments', type: 'textarea' }
+                ],
+                headers: ['Position', 'Company', 'Date']
+            },
+            education: { 
+                fields: [
+                    { name: 'degree', label: 'Degree', type: 'text' },
+                    { name: 'university', label: 'University', type: 'text' },
+                    { name: 'date', label: 'Duration', type: 'text' },
+                    { name: 'gpa', label: 'GPA', type: 'text' }
+                ],
+                headers: ['Degree', 'University', 'Date']
+            },
+            certificates: { 
+                fields: [
+                    { name: 'name', label: 'Certificate Name', type: 'text' },
+                    { name: 'issuer', label: 'Issuer', type: 'text' },
+                    { name: 'icon', label: 'Icon', type: 'icon-picker' }
+                ],
+                headers: ['Certificate', 'Issuer', 'Icon']
+            }
+        };
+
+        async function fetchData() {
+            try {
+                const res = await fetch(`/api/${currentTab}`);
+                if (res.status === 401) return window.location.href = '/login';
+                const data = await res.json();
+                renderTable(data);
+            } catch (err) { showToast('Error fetching data', 'bg-red-500'); }
+        }
+
+        function renderTable(data) {
+            const head = document.getElementById('table-head');
+            const body = document.getElementById('table-body');
+            const c = config[currentTab];
+
+            head.innerHTML = c.headers.map(h => `<th class="px-8 py-6">${h}</th>`).join('') + '<th class="px-8 py-6 text-right">Actions</th>';
+            
+            body.innerHTML = data.map(item => `
+                <tr class="hover:bg-white/[0.02] transition-colors group">
+                    ${c.fields.map(f => {
+                        if(f.name === 'tags') return `<td class="px-8 py-6"><div class="flex gap-1">${(item[f.name] || '').split(',').map(t => `<span class="bg-primary/10 text-primary text-[10px] px-2 py-0.5 rounded uppercase font-bold">${t}</span>`).join('')}</div></td>`;
+                        if(f.type === 'icon-picker') return `<td class="px-8 py-6"><span class="material-symbols-outlined text-primary">${item[f.name] || 'question_mark'}</span></td>`;
+                        if(f.name === 'desc') return `<td class="px-8 py-6 max-w-sm"><div class="max-h-24 overflow-y-auto pr-2 custom-scrollbar text-slate-400 text-xs leading-relaxed">${item[f.name] || '-'}</div></td>`;
+                        return `<td class="px-8 py-6 ${f.name==='title'||f.name==='name'?'font-bold text-white':'text-slate-400'}">${item[f.name] || '-'}</td>`;
+                    }).slice(0, c.headers.length).join('')}
+                    <td class="px-8 py-6 text-right space-x-2">
+                        <button onclick="openModal(${JSON.stringify(item).replace(/"/g, '&quot;')})" class="w-10 h-10 rounded-lg bg-white/5 text-slate-400 hover:bg-primary/20 hover:text-primary transition-all material-symbols-outlined">edit</button>
+                        <button onclick="deleteItem(${item.id})" class="w-10 h-10 rounded-lg bg-white/5 text-slate-400 hover:bg-red-500/20 hover:text-red-500 transition-all material-symbols-outlined">delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function deleteItem(id) {
+            if(confirm('Permanently delete this item?')) {
+                const res = await fetch(`/api/${currentTab}/${id}`, { method: 'DELETE' });
+                if (res.status === 401) return window.location.href = '/login';
+                showToast('Item deleted');
+                fetchData();
+            }
+        }
+
+        function selectIcon(iconName, fieldName) {
+            document.querySelectorAll(`.icon-btn-${fieldName}`).forEach(btn => {
+                btn.classList.remove('selected');
+                if(btn.dataset.icon === iconName) btn.classList.add('selected');
+            });
+            document.getElementById(`input-${fieldName}`).value = iconName;
+        }
+
+        function filterIcons(query, fieldName) {
+            const container = document.getElementById(`icon-grid-${fieldName}`);
+            const items = container.querySelectorAll('button');
+            const q = query.toLowerCase();
+            
+            items.forEach(item => {
+                const name = item.dataset.icon.toLowerCase();
+                if(name.includes(q)) {
+                    item.classList.remove('hidden');
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+        }
+
+        function openModal(item = null) {
+            const modal = document.getElementById('modal');
+            const content = document.getElementById('modal-content');
+            const title = document.getElementById('modal-title');
+            const fieldsContainer = document.getElementById('form-fields');
+            
+            currentEditingId = item ? item.id : null;
+            title.innerText = item ? `Edit ${currentTab.slice(0, -1)}` : `New ${currentTab.slice(0, -1)}`;
+            
+            fieldsContainer.innerHTML = config[currentTab].fields.map(f => {
+                const value = item ? item[f.name] || '' : '';
+                
+                if (f.type === 'icon-picker') {
+                    return `
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">${f.label}</label>
+                            <input type="hidden" name="${f.name}" id="input-${f.name}" value="${value}">
+                            <div class="bg-white/5 border border-white/10 rounded-2xl p-4">
+                                <input type="text" oninput="filterIcons(this.value, '${f.name}')" placeholder="Search icons..." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm mb-4 focus:outline-none focus:border-primary transition-all text-white">
+                                <div class="grid grid-cols-4 sm:grid-cols-6 gap-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar" id="icon-grid-${f.name}">
+                                    ${MATERIAL_ICONS.map(icon => `
+                                        <button type="button" onclick="selectIcon('${icon}', '${f.name}')" data-icon="${icon}" class="icon-grid-item icon-btn-${f.name} ${value === icon ? 'selected' : ''} flex flex-col items-center justify-center p-2 rounded-xl border border-transparent transition-all group">
+                                            <span class="material-symbols-outlined text-2xl">${icon}</span>
+                                            <span class="text-[8px] mt-1 opacity-0 group-hover:opacity-100 transition-opacity truncate w-full text-center">${icon}</span>
+                                        </button>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                return `
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">${f.label}</label>
+                        ${f.type === 'textarea' 
+                            ? `<textarea name="${f.name}" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary transition-all h-64 text-white custom-scrollbar">${value}</textarea>`
+                            : `<input type="text" name="${f.name}" value="${value}" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary transition-all text-white">`
+                        }
+                    </div>
+                `;
+            }).join('');
+
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            content.classList.remove('scale-95');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modal');
+            const content = document.getElementById('modal-content');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            content.classList.add('scale-95');
+        }
+
+        document.getElementById('entry-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            
+            const method = currentEditingId ? 'PUT' : 'POST';
+            const url = currentEditingId ? `/api/${currentTab}/${currentEditingId}` : `/api/${currentTab}`;
+
+            const res = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (res.status === 401) return window.location.href = '/login';
+
+            showToast(currentEditingId ? 'Updated successfully' : 'Created successfully');
+            closeModal();
+            fetchData();
+        };
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('nav-active'));
+            document.getElementById(`btn-${tab}`).classList.add('nav-active');
+            document.getElementById('header-title').innerText = tab;
+            if (window.innerWidth < 1024 && isSidebarOpen) toggleSidebar();
+            fetchData();
+        }
+
+        function showToast(msg, bg = 'bg-green-500') {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.className = `fixed bottom-10 left-1/2 -translate-x-1/2 z-[110] px-6 py-3 rounded-xl ${bg} text-white font-bold shadow-2xl transition-all duration-500 opacity-100 translate-y-0`;
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-10');
+            }, 3000);
+        }
+
+        switchTab('projects');
+    </script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+{
+  "skills": [
+    {
+      "id": 2,
+      "name": "PostgreSQL",
+      "category": "Relational DB",
+      "icon": "database"
+    },
+    {
+      "id": 3,
+      "name": "Redis",
+      "category": "Caching",
+      "icon": "memory"
+    },
+    {
+      "id": 4,
+      "name": "Docker",
+      "category": "DevOps",
+      "icon": "box"
+    },
+    {
+      "id": 1773671577042,
+      "name": "Css",
+      "category": "code",
+      "icon": "extension"
+    }
+  ],
+  "projects": [
+    {
+      "id": 1773673539636,
+      "title": "Portopia",
+      "desc": "is an AI-powered digital portfolio generator that allows users to create professional portfolio websites in minutes. The platform is fully Vercel-ready and provides an end-to-end experience, from entering user data to deploying a live website, without requiring technical expertise",
+      "image": "https://ms.hsoubcdn.com/uploads/thumbnails/4609325/69a2ea8c0a73b/PORTOFOLIOP2.jpg",
+      "github": "https://github.com/ehab7sein/AI-Portfolio-Generator-main",
+      "link": "https://portopia.vercel.app/index.html",
+      "tags": "Html,Node js,Express js"
+    }
+  ],
+  "experience": [
+    {
+      "id": 1,
+      "title": "Web developer Intrernship",
+      "company": "CodeVeda",
+      "date": "Jan 2025— Present",
+      "desc": "Leading A Internship for Web developer"
+    }
+  ],
+  "education": [
+    {
+      "id": 1,
+      "degree": "B.Sc. in Computer Science",
+      "university": "Tanta University",
+      "date": "2024 — Present",
+      "gpa": "3.68/4.0"
+    }
+  ],
+  "certificates": [
+    {
+      "id": 1,
+      "name": "AWS Solutions Architect",
+      "issuer": "Amazon Web Services",
+      "icon": "verified"
+    }
+  ],
+  "users": [
+    {
+      "username": "admin",
+      "password": "$2a$10$O0UGL5cAi1NolNRGPUJxNeO5RFf2CwZ9iBhoq0cJVU691La/19rR6"
+    }
+  ]
+}
