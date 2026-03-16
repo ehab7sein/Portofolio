@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ehab Hussein | Backend Developer</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@400;500&amp;family=Sora:wght@400;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1e1e8a",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#0f172a",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "sora": ["Sora", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"],
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+        .sora-title {
+            font-family: 'Sora', sans-serif;
+        }
+        .mono-text {
+            font-family: 'JetBrains Mono', monospace;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 selection:bg-primary selection:text-white">
+<!-- Modern Floating Navigation -->
+<nav class="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-5xl z-[100] transition-all duration-500" id="main-nav">
+    <div class="bg-slate-950/40 backdrop-blur-xl border border-white/5 rounded-2xl px-6 h-16 flex items-center justify-between shadow-2xl">
+        <div class="flex items-center gap-2 group cursor-pointer">
+            <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center group-hover:rotate-12 transition-transform">
+                <span class="material-symbols-outlined text-white text-xl">terminal</span>
+            </div>
+            <span class="text-xl font-bold sora-title tracking-tighter uppercase">EH<span class="text-primary">.</span></span>
+        </div>
+
+        <!-- Desktop Menu -->
+        <div class="hidden md:flex items-center gap-8">
+            <a class="text-xs font-mono uppercase tracking-widest text-slate-400 hover:text-white transition-colors" href="#about">About</a>
+            <a class="text-xs font-mono uppercase tracking-widest text-slate-400 hover:text-white transition-colors" href="#stack">Stack</a>
+            <a class="text-xs font-mono uppercase tracking-widest text-slate-400 hover:text-white transition-colors" href="#projects">Work</a>
+            <a class="text-xs font-mono uppercase tracking-widest text-slate-400 hover:text-white transition-colors" href="#experience">Exp</a>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <a class="hidden sm:block bg-white text-black px-5 py-2 rounded-xl text-xs font-bold hover:bg-primary hover:text-white transition-all text-center" href="#contact">
+                LET'S TALK
+            </a>
+            
+            <!-- Mobile Menu Toggle -->
+            <button class="md:hidden flex items-center justify-center w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 transition-colors" id="menu-toggle">
+                <span class="material-symbols-outlined text-2xl" id="menu-icon">menu</span>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<!-- Mobile Menu Overlay -->
+<div class="fixed inset-0 z-[90] bg-background-dark/95 backdrop-blur-2xl transition-all duration-500 opacity-0 pointer-events-none" id="mobile-menu">
+    <div class="flex flex-col items-center justify-center h-full gap-8 text-center">
+        <a class="mobile-link text-4xl font-bold sora-title hover:text-primary transition-colors" href="#about">About</a>
+        <a class="mobile-link text-4xl font-bold sora-title hover:text-primary transition-colors" href="#stack">Stack</a>
+        <a class="mobile-link text-4xl font-bold sora-title hover:text-primary transition-colors" href="#projects">Work</a>
+        <a class="mobile-link text-4xl font-bold sora-title hover:text-primary transition-colors" href="#experience">Experience</a>
+        <a class="mobile-link mt-8 bg-primary text-white px-10 py-4 rounded-2xl font-bold" href="#contact">Let's Talk</a>
+    </div>
+</div>
+
+<script>
+    const menuToggle = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const menuIcon = document.getElementById('menu-icon');
+    const mobileLinks = document.querySelectorAll('.mobile-link');
+    const nav = document.getElementById('main-nav');
+
+    let isMenuOpen = false;
+
+    function toggleMenu() {
+        isMenuOpen = !isMenuOpen;
+        mobileMenu.classList.toggle('opacity-0');
+        mobileMenu.classList.toggle('pointer-events-none');
+        menuIcon.innerText = isMenuOpen ? 'close' : 'menu';
+        document.body.style.overflow = isMenuOpen ? 'hidden' : '';
+    }
+
+    menuToggle.addEventListener('click', toggleMenu);
+
+    mobileLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            if (isMenuOpen) toggleMenu();
+        });
+    });
+
+    // Shrink nav on scroll
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+            nav.classList.remove('top-6');
+            nav.classList.add('top-2');
+        } else {
+            nav.classList.add('top-6');
+            nav.classList.remove('top-2');
+        }
+    });
+</script>
+<script>
+    const API_BASE = 'http://localhost:3000/api';
+
+    async function loadPortfolioData() {
+        try {
+            const [skills, projects, experience, education, certificates] = await Promise.all([
+                fetch(`${API_BASE}/skills`).then(res => res.json()),
+                fetch(`${API_BASE}/projects`).then(res => res.json()),
+                fetch(`${API_BASE}/experience`).then(res => res.json()),
+                fetch(`${API_BASE}/education`).then(res => res.json()),
+                fetch(`${API_BASE}/certificates`).then(res => res.json())
+            ]);
+
+            // Render Skills
+            document.getElementById('stack-container').innerHTML = skills.map(s => `
+                <div class="p-8 border border-slate-800 hover:border-primary transition-colors group">
+                    <span class="material-symbols-outlined text-4xl mb-4 group-hover:text-primary transition-colors">${s.icon || 'code'}</span>
+                    <h3 class="font-bold text-lg mb-1">${s.name}</h3>
+                    <p class="text-xs text-slate-500 uppercase tracking-widest">${s.category}</p>
+                </div>
+            `).join('');
+
+            // Render Projects
+            document.getElementById('projects-container').innerHTML = projects.map(p => `
+                <div class="group">
+                    <div class="relative overflow-hidden aspect-video bg-slate-800 rounded-xl mb-6 shadow-2xl border border-white/5">
+                        <img src="${p.image || 'https://via.placeholder.com/800x450?text=Project'}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="${p.title}">
+                        <div class="absolute inset-0 bg-gradient-to-t from-background-dark/90 via-background-dark/20 to-transparent opacity-60"></div>
+                        
+                        <div class="absolute bottom-4 left-4 flex gap-2">
+                            ${(p.tags || '').split(',').map(t => `<span class="bg-primary/20 backdrop-blur-md text-white text-[10px] px-2 py-1 rounded uppercase font-bold tracking-widest border border-white/10">${t.trim()}</span>`).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="sora-title text-2xl font-bold tracking-tight">${p.title}</h3>
+                        <div class="flex gap-4">
+                            ${p.github ? `<a href="${p.github}" target="_blank" class="text-slate-500 hover:text-white transition-colors" title="GitHub Repo"><span class="material-symbols-outlined">code</span></a>` : ''}
+                            ${p.link ? `<a href="${p.link}" target="_blank" class="text-slate-500 hover:text-white transition-colors" title="Live Preview"><span class="material-symbols-outlined">open_in_new</span></a>` : ''}
+                        </div>
+                    </div>
+                    <p class="text-slate-400 font-light leading-relaxed mb-4">${p.desc}</p>
+                </div>
+            `).join('');
+
+            // Render Experience
+            document.getElementById('experience-container').innerHTML = experience.map(e => `
+                <div class="relative pl-8 border-l border-slate-800 pb-12 last:pb-0">
+                    <div class="absolute w-4 h-4 bg-primary rounded-full -left-[8.5px] top-1"></div>
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-2">
+                        <div>
+                            <h3 class="text-2xl font-bold sora-title">${e.title}</h3>
+                            <p class="text-primary font-mono text-sm tracking-widest uppercase">${e.company}</p>
+                        </div>
+                        <span class="text-slate-500 font-mono text-sm">${e.date}</span>
+                    </div>
+                    <p class="text-slate-400 text-lg leading-relaxed max-w-4xl">${e.desc || ''}</p>
+                </div>
+            `).join('');
+
+            // Render Education
+            document.getElementById('education-container').innerHTML = education.map(e => `
+                <div class="p-8 border border-slate-800 rounded-xl hover:border-primary/30 transition-all bg-slate-900/20">
+                    <span class="material-symbols-outlined text-primary text-4xl mb-4">school</span>
+                    <h3 class="text-xl font-bold sora-title mb-2">${e.degree}</h3>
+                    <p class="text-slate-300 mb-4">${e.university}</p>
+                    <div class="flex justify-between items-center text-sm font-mono text-slate-500">
+                        <span>${e.date}</span>
+                        <span class="px-2 py-1 bg-primary/10 text-primary rounded text-[10px] font-bold">GPA: ${e.gpa || '-'}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            // Render Certificates
+            document.getElementById('certificates-container').innerHTML = certificates.map(c => `
+                <a href="#" class="p-8 border border-slate-800 hover:border-primary transition-all group bg-background-dark/40">
+                    <div class="flex justify-between items-start mb-6">
+                        <span class="material-symbols-outlined text-4xl group-hover:text-primary transition-colors">${c.icon || 'verified'}</span>
+                        <span class="material-symbols-outlined text-slate-700 group-hover:text-primary transition-colors">open_in_new</span>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">${c.name}</h3>
+                    <p class="text-xs text-slate-500 uppercase tracking-widest font-mono">${c.issuer}</p>
+                </a>
+            `).join('');
+
+        } catch (err) {
+            console.error('Error loading portfolio data:', err);
+        }
+    }
+
+    loadPortfolioData();
+</script>
+<!-- Hero Section -->
+<section class="min-h-screen flex flex-col justify-center m-10 px-6 pt-20">
+<div class="max-w-6xl mx-auto w-full grid lg:grid-cols-[1.1fr_0.9fr] gap-12 items-center">
+<div>
+<p class="text-primary font-mono mb-6 tracking-widest uppercase text-sm">Backend Systems Engineer</p>
+<h1 class="sora-title text-6xl md:text-8xl lg:text-9xl font-extrabold leading-[0.9] tracking-tighter mb-8">
+                Ehab <br/>Hussein<span class="text-primary">.</span>
+</h1>
+<div class="max-w-2xl">
+<p class="text-xl md:text-2xl text-slate-400 font-light leading-relaxed">
+                    Building resilient, high-performance backends. Specialized in architectural precision and distributed systems.
+                </p>
+</div>
+<div class="mt-12 flex gap-4">
+<a class="group flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-8 py-4 rounded-xl hover:bg-primary hover:text-white transition-all duration-300" href="#projects">
+<span class="font-bold">Explore Work</span>
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+</div>
+</div>
+<div class="relative">
+<div class="absolute -top-6 -right-6 w-28 h-28 bg-primary/20 rounded-full blur-3xl"></div>
+<div class="absolute -bottom-6 -left-6 w-24 h-24 bg-primary/10 rounded-full blur-3xl"></div>
+</div>
+</div>
+</section>
+<!-- About & Code Section -->
+<section class="py-32 px-6 bg-slate-50 dark:bg-slate-900/50" id="about">
+<div class="max-w-6xl mx-auto grid lg:grid-cols-2 gap-20 items-center">
+<div>
+<h2 class="sora-title text-4xl font-bold mb-8 italic">01 // About</h2>
+<div class="space-y-6 text-lg text-slate-400">
+<p>
+                        I focus on the hidden parts of the web. The parts that need to be fast, secure, and always available. My approach to engineering is grounded in the principle that simple code is better than complex code, and scalable architecture is better than accidental growth.
+                    </p>
+<p>
+                        I spend my days optimizing database queries, designing RESTful and gRPC APIs, and ensuring that microservices talk to each other without missing a beat.
+                    </p>
+</div>
+</div>
+<div class="relative">
+<div class="absolute -top-4 -left-4 w-24 h-24 bg-primary/20 rounded-full blur-3xl"></div>
+<div class="bg-slate-950 rounded-xl p-6 border border-slate-800 shadow-2xl mono-text text-sm leading-relaxed overflow-x-auto">
+<div class="flex gap-2 mb-4">
+<div class="w-3 h-3 rounded-full bg-red-500/50"></div>
+<div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+<div class="w-3 h-3 rounded-full bg-green-500/50"></div>
+</div>
+<div class="text-slate-500">@RestController</div>
+<div class="text-slate-500">@RequestMapping("/api/v1")</div>
+<div><span class="text-purple-400">public class</span> <span class="text-blue-300">GreetingController</span> {</div>
+<div class="pl-4 mt-2 text-slate-500">@GetMapping("/status")</div>
+<div class="pl-4"><span class="text-purple-400">public</span> ResponseEntity&lt;Map&gt; <span class="text-yellow-200">checkHealth</span>() {</div>
+<div class="pl-8 text-slate-300"><span class="text-purple-400">var</span> response = Map.of(</div>
+<div class="pl-12 text-green-300">"status", "UP",</div>
+<div class="pl-12 text-green-300">"engineer", "Ehab Hussein",</div>
+<div class="pl-12 text-green-300">"message", "Ready to scale."</div>
+<div class="pl-8 text-slate-300">);</div>
+<div class="pl-8"><span class="text-purple-400">return</span> ResponseEntity.ok(response);</div>
+<div class="pl-4">}</div>
+<div>}</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Tech Stack -->
+<section class="py-32 px-6" id="stack">
+<div class="max-w-6xl mx-auto">
+<h2 class="sora-title text-4xl font-bold mb-16 italic text-center">02 // Tech Stack</h2>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="stack-container">
+<!-- Tech Items will be loaded here -->
+</div>
+</div>
+</section>
+
+<!-- Engineering Mindset (Big Quote) -->
+<section class="py-40 bg-primary/5 px-6">
+<div class="max-w-6xl mx-auto text-center">
+<span class="material-symbols-outlined text-primary text-6xl mb-10">format_quote</span>
+<blockquote class="sora-title text-3xl md:text-5xl lg:text-6xl font-black leading-tight tracking-tight text-slate-200">
+                "Growth doesn’t come from comfort, it comes from <span class="text-primary italic">embracing challenges and learning</span> from them. "
+            </blockquote>
+</div>
+</section>
+
+<!-- Projects Section -->
+<section class="py-32 px-6" id="projects">
+<div class="max-w-6xl mx-auto">
+<h2 class="sora-title text-4xl font-bold mb-16 italic">03 // Projects</h2>
+<div class="grid md:grid-cols-2 gap-12" id="projects-container">
+<!-- Projects will be loaded here -->
+</div>
+</div>
+</section>
+
+<!-- Experience & Internships -->
+<section class="py-32 px-6 bg-slate-50 dark:bg-slate-900/50" id="experience">
+    <div class="max-w-6xl mx-auto">
+        <h2 class="sora-title text-4xl font-bold mb-16 italic">04 // Experience</h2>
+        <div class="space-y-12" id="experience-container">
+            <!-- Experience will be loaded here -->
+        </div>
+    </div>
+</section>
+
+<!-- Education -->
+<section class="py-32 px-6" id="education">
+    <div class="max-w-6xl mx-auto">
+        <h2 class="sora-title text-4xl font-bold mb-16 italic">05 // Education</h2>
+        <div class="grid md:grid-cols-2 gap-8" id="education-container">
+            <!-- Education will be loaded here -->
+        </div>
+    </div>
+</section>
+
+<!-- Certificates -->
+<section class="py-32 px-6 bg-slate-50 dark:bg-slate-900/50" id="certificates">
+    <div class="max-w-6xl mx-auto">
+        <h2 class="sora-title text-4xl font-bold mb-16 italic text-center">06 // Certificates</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="certificates-container">
+            <!-- Certificates will be loaded here -->
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section class="py-32 px-6 border-t border-slate-800/50" id="contact">
+<div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-end gap-12">
+<div>
+<h2 class="sora-title text-5xl md:text-7xl font-black mb-10 tracking-tighter">Let's <br/>Connect<span class="text-primary">.</span></h2>
+<div class="flex flex-col gap-4 text-2xl font-medium">
+<a class="hover:text-primary transition-colors flex items-center gap-3" href="mailto:ehab.hussein.dev@gmail.com">
+                        ehab.hussein.dev@gmail.com
+                        <span class="material-symbols-outlined text-slate-600">mail</span>
+</a>
+<a class="hover:text-primary transition-colors flex items-center gap-3" href="https://www.linkedin.com/in/ehab-hussein-dev/ ">
+                        LinkedIn
+                        <span class="material-symbols-outlined text-slate-600">link</span>
+</a>
+<a class="hover:text-primary transition-colors flex items-center gap-3" href="https://github.com/ehab7sein">
+                        GitHub
+                        <span class="material-symbols-outlined text-slate-600">code</span>
+</a>
+</div>
+</div>
+<div class="text-slate-500 text-sm mono-text">
+<p>© 2026 EHAB HUSSEIN</p>
+<p>LATENCY: LOW | UPTIME: 99.9%</p>
+</div>
+</div>
+</section>
+<!-- Footer Simple -->
+<footer class="py-10 px-6 bg-slate-950/50 text-center">
+<p class="text-slate-600 text-xs font-mono uppercase tracking-widest">Built with precision &amp; coffee. Driven by clean architecture.</p>
+</footer>
+</body></html>
