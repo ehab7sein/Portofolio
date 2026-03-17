@@ -17,19 +17,23 @@ const adapter = new FileSync(path.join(__dirname, 'db.json'));
 const db = low(adapter);
 
 // Initial database structure
-db.defaults({ 
-  skills: [],
-  projects: [],
-  experience: [],
-  education: [],
-  certificates: [],
-  users: [
-    { 
-        username: '01026897739', 
-        password: bcrypt.hashSync('01275924043Ee$', 10) 
-    }
-  ]
-}).write();
+try {
+    db.defaults({ 
+      skills: [],
+      projects: [],
+      experience: [],
+      education: [],
+      certificates: [],
+      users: [
+        { 
+            username: '01026897739', 
+            password: bcrypt.hashSync('01275924043Ee$', 10) 
+        }
+      ]
+    }).write();
+} catch (error) {
+    console.log('Note: Database defaults write skipped (expected in read-only environments like Vercel)');
+}
 
 app.use(cors({
     origin: true,
@@ -113,23 +117,35 @@ resources.forEach(resource => {
 
     // POST, PUT, DELETE are protected
     app.post(`/api/${resource}`, authenticateToken, (req, res) => {
-        const item = { id: Date.now(), ...req.body };
-        db.get(resource).push(item).write();
-        res.status(201).json(item);
+        try {
+            const item = { id: Date.now(), ...req.body };
+            db.get(resource).push(item).write();
+            res.status(201).json(item);
+        } catch (error) {
+            res.status(500).json({ error: 'Database write failed. Note: Vercel filesystem is read-only.' });
+        }
     });
 
     app.put(`/api/${resource}/:id`, authenticateToken, (req, res) => {
-        const id = parseInt(req.params.id);
-        db.get(resource)
-          .find({ id })
-          .assign(req.body)
-          .write();
-        res.json({ success: true });
+        try {
+            const id = parseInt(req.params.id);
+            db.get(resource)
+              .find({ id })
+              .assign(req.body)
+              .write();
+            res.json({ success: true });
+        } catch (error) {
+            res.status(500).json({ error: 'Database write failed. Note: Vercel filesystem is read-only.' });
+        }
     });
 
     app.delete(`/api/${resource}/:id`, authenticateToken, (req, res) => {
-        db.get(resource).remove({ id: parseInt(req.params.id) }).write();
-        res.status(204).send();
+        try {
+            db.get(resource).remove({ id: parseInt(req.params.id) }).write();
+            res.status(204).send();
+        } catch (error) {
+            res.status(500).json({ error: 'Database write failed. Note: Vercel filesystem is read-only.' });
+        }
     });
 });
 
