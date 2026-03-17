@@ -13,7 +13,7 @@ const port = 3000;
 const JWT_SECRET = 'portfolio-secret-key-2026'; // In production, use process.env.JWT_SECRET
 
 // Set up lowdb
-const adapter = new FileSync('db.json');
+const adapter = new FileSync(path.join(__dirname, 'db.json'));
 const db = low(adapter);
 
 // Initial database structure
